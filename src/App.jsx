@@ -14,7 +14,10 @@ function App() {
     let dbTodos = useRef(doc.current.getMap('my map type'))
 
     useEffect(() => {
-        new WebrtcProvider(uuidv4(), doc.current)
+        // Example of a static room name.
+        // const roomName = 'testTodo01'
+        const roomName = uuidv4()
+        new WebrtcProvider(roomName, doc.current)
 
         for (const [key, value] of Object.entries(todosMockDataHash)) {
             dbTodos.current.set(key, value)
@@ -50,9 +53,7 @@ function App() {
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
             }
-            const tempDoc = dbTodos.current.set(newTodo.id, newTodo)
-
-            tempDoc.save()
+            dbTodos.current.set(newTodo.id, newTodo)
         }
     }
 

@@ -6,6 +6,10 @@ Testing basic implementation and functionalities of YJs with a todo react app
 
 -   Based on [Minimal-React-Todo-boilerplate](https://github.com/audiBookning/Minimal-React-Todo-boilerplate) and keeping the same oversimplified/minimalist attitude
 
+-   To test the Webrtc feature of Yjs change the roomName variable in App.jsx to a constant (instead of using UUID) and start 2 different instances of react with `npm start`. Then the changes in one browser window will be reflected in the other.
+
+-   [codesandbox preview](https://codesandbox.io/s/minimal-yjs-react-todo-sample-iwtohz?file=/readme.md)
+
 # Create React App Readme
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
