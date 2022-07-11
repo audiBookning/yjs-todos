@@ -10,6 +10,13 @@ Testing basic implementation and functionalities of YJs with a todo react app
 
 -   [codesandbox preview](https://codesandbox.io/s/minimal-yjs-react-todo-sample-iwtohz?file=/readme.md)
 
+-   More code on another branch:
+    -   I tried to implement the unsubscribing from the Yjs observer.
+    -   Mainly, i tried to avoid the multiple useEffect calling in dev and their unfortunate effects, that create-react-app has put in as an effort to try to teach us, mortals, how to code in React.
+    -   Try to avoid creating multiple WebrtcProvider because of the useEffect...
+    -   I don't know if i really understood the React Team message (at least i didn't disable the strict mode) or even if this code follows a minimally acceptable pattern.
+    -   What i can tell is that the code, although apparently working as intended, is definitivelly not to my taste. So i exiled it to a different branch called [little-more-complex](https://github.com/audiBookning/yjs-todos/tree/little-more-complex). Maybe it can help someone in someway.
+
 # Create React App Readme
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
