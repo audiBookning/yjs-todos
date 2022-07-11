@@ -11,26 +11,60 @@ function App() {
     const doc = useRef(new Y.Doc())
     const [todos, setTodos] = useState([])
     const [editTodo, setEditTodo] = useState()
-    let dbTodos = useRef(doc.current.getMap('my map type'))
+    // unecessasry useRef just to get
+    let ymap = doc.current.getMap('my map type')
+    // flag to avoid the double useEffect call
+    const flag = useRef(true)
 
-    useEffect(() => {
+    // Initialize the WebRTC connection
+    function initWebrtcProvider(ydoc) {
         // Example of a static room name.
         // const roomName = 'testTodo01'
         const roomName = uuidv4()
-        new WebrtcProvider(roomName, doc.current)
+        new WebrtcProvider(roomName, ydoc)
+    }
 
+    // mocking initial data
+    function initMockData() {
         for (const [key, value] of Object.entries(todosMockDataHash)) {
-            dbTodos.current.set(key, value)
+            ymap.set(key, value)
         }
-        dbTodos.current.observe((YEvent) => {
-            const tododoArray = []
-            for (const value of dbTodos.current.values()) {
-                tododoArray.push(value)
-            }
-            setTodos(tododoArray)
-        })
+    }
+
+    function getAllTodos(todosMap) {
+        const tododoArray = []
+        for (const value of todosMap.values()) {
+            tododoArray.push(value)
+        }
+        return tododoArray
+    }
+
+    useEffect(() => {
+        /*
+        Yjs doesn't return a reference to the yjs observe handle,
+        so we need a flag for the unsubscribe function
+        Note that ymap has a property _eH which maps the subscriptions 
+        and might be the prefered approach in this case
+        */
+        let observer
+
+        if (flag.current) {
+            ymap.observe((YEvent) => {
+                observer = false
+                const tododoArray = getAllTodos(ymap)
+                setTodos(tododoArray)
+            })
+            initWebrtcProvider(doc.current)
+            initMockData()
+            flag.current = false
+        }
+
+        return () => {
+            if (observer) ymap.unobserve()
+        }
     }, [])
 
+    // TODO: Refactor to a much more simple algorithm
     const addOrUpdateItemOnClick = async (item) => {
         let newTodo
         if (item.id) {
@@ -40,7 +74,7 @@ function App() {
                     editing: false,
                     updatedAt: new Date().toISOString(),
                 }
-                dbTodos.current.set(item.id, editedTodo)
+                ymap.set(item.id, editedTodo)
             } catch (error) {
                 console.log('error ', error)
             }
@@ -53,7 +87,7 @@ function App() {
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
             }
-            dbTodos.current.set(newTodo.id, newTodo)
+            ymap.set(newTodo.id, newTodo)
         }
     }
 
@@ -63,11 +97,11 @@ function App() {
             state: !todo.state,
             updatedAt: new Date().toISOString(),
         }
-        dbTodos.current.set(toggledTodo.id, toggledTodo)
+        ymap.set(toggledTodo.id, toggledTodo)
     }
 
     const removeItem = (id) => {
-        dbTodos.current.delete(id)
+        ymap.delete(id)
     }
 
     const editItem = (todo) => {
@@ -76,7 +110,7 @@ function App() {
             editing: true,
             updatedAt: new Date().toISOString(),
         }
-        dbTodos.current.set(todo.id, editedTodo)
+        ymap.set(todo.id, editedTodo)
         setEditTodo(todo)
     }
 
